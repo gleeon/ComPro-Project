@@ -1,0 +1,52 @@
+import gamepad
+from cyberpi import *
+import time
+
+servo_angle = 140
+GripperArm = 's1'
+MovingArm = 's4'
+
+#set start position
+mbot2.servo_set(30, s)
+mbot2.servo_set(servo_angle, x)
+
+while True:
+    ForBack = int(gamepad.get_joystick('Ly'))
+    LeftRight = int(gamepad.get_joystick('Lx'))
+    UpDown = int(gamepad.get_joystick('Ry'))
+    
+    Launch= gamepad.is_key_pressed('N1')
+    Keep = gamepad.is_key_pressed('N2')
+    OpenArm = gamepad.is_key_pressed('N4')
+    CloseArm = gamepad.is_key_pressed('N3')
+
+
+    if abs(ForBack) > 10 or abs(LeftRight) > 10:
+        LeftSpeed = ForBack + LeftRight
+        RightSpeed = -ForBack + LeftRight
+        mbot2.drive_speed(LeftSpeed, RightSpeed)
+        time.sleep(0.1)
+
+    if abs(UpDown) > 10:
+        servo_angle += UpDown/20
+        mbot2.servo_set(servo_angle, MovingArm)
+        time.sleep(0.05)
+    
+    if OpenArm:
+        mbot2.servo_set(30, GripperArm)
+        time.sleep(1)
+    if CloseArm:
+        mbot2.servo_set(150, GripperArm)
+        time.sleep(1)
+        
+    if Launch:
+        mbot2.motor_set(-200, 'm1') 
+        time.sleep(1)
+        mbot2.motor_set(0, 'm1') 
+        
+    if Keep:
+        mbot2.motor_set(200, 'm1')  
+        time.sleep(0.5)
+        mbot2.motor_set(0,'m1')
+        
+    mbot2.drive_speed(0,0)
